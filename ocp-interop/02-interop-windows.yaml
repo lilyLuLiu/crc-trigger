@@ -1,0 +1,40 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: crc-interop-ocp-<VERSION>-windows-
+spec:
+  pipelineRef:
+    name: crc-qe-latest
+  params:
+  - name: host-config-secret
+    value: host-windows-1-brno
+  - name: builder-config-secret
+    value: host-windows-1-blr # Required for msi build only available here
+  # - name: tray-downloadable_baseurl
+  #   value: https://github.com/crc-org/tray-electron/releases/download/1.2.9
+  # - name: crc-scm-pr
+  #   value: '3886'
+  - name: bundle-version
+    value: '<VERSION>'
+  - name: bundle-shasumfile
+    value: bundles.x86_64.sha256
+  - name: bundle-url
+    value: "https://crcqe-asia.s3.ap-south-1.amazonaws.com/nightly/ocp/<VERSION>"
+  - name: s3-folder-path
+    value: nightly/ocp/<VERSION>
+  - name: e2e-tag
+    value: "~@minimal && ~@story_microshift"
+  - name: integration-tag
+    value: "! microshift-preset"
+  workspaces:
+  - name: pipelines-data
+    persistentVolumeClaim:
+      claimName: pipelines-data
+  - name: reportportal-credentials
+    secret:
+      secretName: reportportal-crc
+  - name: ocp-pullsecret
+    secret:
+      secretName: crc-crc-qe
+  timeout: "5h"
