@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-crc-release
+  labels:
+    app.kubernetes.io/component: config
+data:
+  crc-releases-eng: https://cdk-builds.usersys.redhat.com/builds/crc/releases/<VERSION>
+  crc-version: '<VERSION>'
+  ocp-version: '<BUNDLE_VERSION>'
+  microshift-version: '<BUNDLE_VERSION>'

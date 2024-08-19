@@ -1,0 +1,37 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: release-<VERSION>-fedora40-
+spec:
+  pipelineRef:
+    name: crc-qe-virtualized
+  params:
+  - name: fedora-version
+    value: '40'
+  - name: internal-base-url
+    value: https://download.hosts.prod.upshift.rdu2.redhat.com/etera/crc/<VERSION_2>/<VERSION_1>/<VERSION>/staging
+  - name: internal-asset-name
+    value: crc-linux-amd64.tar.xz
+  - name: internal-shasum-name
+    value: sha256sum.txt
+  - name: shasum-file
+    value: sha256sum.txt
+  # - name: e2e-tag
+  #   value: '@story_openshift'
+  - name: s3-folder-path
+    value: 'release/<VERSION>/ocp'
+  workspaces:
+  - name: pipelines-data
+    persistentVolumeClaim:
+      claimName: pipelines-data
+  - name: cloud-credentials
+    secret:
+      secretName: aws-crcqe-bot
+  - name: ocp-pullsecret
+    secret:
+      secretName: crc-crc-qe
+  - name: reportportal-credentials
+    secret:
+      secretName: reportportal-crc
+  timeout: "5h"
