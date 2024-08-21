@@ -1,0 +1,31 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: nightly-crc-ocp-<B_VERSION>-x86-64-rhel-1-brno-
+spec:
+  pipelineRef:
+    name: crc-qe-latest
+  params:
+  - name: host-config-secret
+    value: "host-rhel-1-brno"
+  - name: builder-config-secret
+    value: ""
+  - name: bundle-version
+    value: "<B_VERSION>"
+  - name: bundle-url
+    value: "http://cdk-builds.usersys.redhat.com/builds/crc/bundles/openshift/<B_VERSION>"
+  - name: e2e-tag
+    value: "~@minimal && ~@story_microshift"
+  - name: integration-tag
+    value: "! microshift-preset"
+  workspaces:
+  - name: pipelines-data
+    persistentVolumeClaim:
+      claimName: pipelines-data
+  - name: ocp-pullsecret
+    secret:
+      secretName: crc-crc-qe
+  - name: reportportal-credentials
+    secret:
+      secretName: reportportal-crc
+  timeout: "5h"
