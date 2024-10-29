@@ -22,6 +22,8 @@ spec:
     value: '120m'
   - name: s3-folder-path
     value: 'release/<VERSION>/ocp'
+  - name: test-catelog
+    value: "release-test"
   workspaces:
   - name: pipelines-data
     persistentVolumeClaim:
