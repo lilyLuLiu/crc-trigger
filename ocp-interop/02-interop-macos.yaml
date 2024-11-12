@@ -27,6 +27,8 @@ spec:
     value: "~@minimal && ~@story_microshift"
   - name: integration-tag
     value: "! microshift-preset"
+  - name: test-catelog
+    value: ocp-interop-test
   workspaces:
   - name: pipelines-data
     persistentVolumeClaim:

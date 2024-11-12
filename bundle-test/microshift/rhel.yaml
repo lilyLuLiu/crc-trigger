@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: nightly-crc-ocp-<B_VERSION>-x86-64-rhel-1-brno-
+  generateName: crc-bundle-test-microshift-<BUNDLE_VERSION>-rhel-
 spec:
   pipelineRef:
     name: crc-qe-latest
@@ -10,14 +10,22 @@ spec:
     value: "host-rhel-1-brno"
   - name: builder-config-secret
     value: ""
+  - name: preset 
+    value: microshift
   - name: bundle-version
-    value: "<B_VERSION>"
+    value: "<BUNDLE_VERSION>"
+  - name: bundle-shasumfile
+    value: sha256sum.txt
   - name: bundle-url
-    value: "http://cdk-builds.usersys.redhat.com/builds/crc/bundles/openshift/<B_VERSION>"
+    value: "https://cdk-builds.usersys.redhat.com/builds/crc/bundles/microshift/<BUNDLE_VERSION>"
   - name: e2e-tag
-    value: "~@minimal && ~@story_microshift"
+    value: "@story_microshift"
   - name: integration-tag
-    value: "! microshift-preset"
+    value: "microshift-preset"
+  - name: s3-folder-path
+    value: nightly/microshift/<BUNDLE_VERSION>
+  - name: test-catelog
+    value: bundle-test
   workspaces:
   - name: pipelines-data
     persistentVolumeClaim:

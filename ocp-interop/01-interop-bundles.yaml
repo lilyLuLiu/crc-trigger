@@ -16,8 +16,9 @@ spec:
   - name: snc-runner-type
     value: external
   - name: ocp-index-url
-    value: https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp-dev-preview/<VERSION>
+    value: https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/<FOLDER>/<VERSION>
     #value: https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/4.17.0-ec.1
+    #value: https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp-dev-preview/4.17.0-ec.1
   - name: ocp-version
     value: '<VERSION>'
   - name: snc-ref

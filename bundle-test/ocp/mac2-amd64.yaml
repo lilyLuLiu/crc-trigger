@@ -1,13 +1,13 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: nightly-crc-ocp-<B_VERSION>-arm64-mac-4-brno-
+  generateName: crc-bundle-test-ocp-<B_VERSION>-mac-2-brno-mac-x86
 spec:
   pipelineRef:
     name: crc-qe-latest
   params:
   - name: host-config-secret
-    value: "host-mac-4-brno"
+    value: "host-mac-2-brno"
   - name: builder-config-secret
     value: "host-mac-1-brno"
   - name: bundle-version
@@ -15,9 +15,13 @@ spec:
   - name: bundle-url
     value: "http://cdk-builds.usersys.redhat.com/builds/crc/bundles/openshift/<B_VERSION>"
   - name: e2e-tag
-    value: "~@minimal && ~@story_microshift"
+    value: "~@minimal && ~@story_microshift && ~@release"
   - name: integration-tag
     value: "! microshift-preset"
+  - name: s3-folder-path
+    value: nightly/ocp/<B_VERSION>
+  - name: test-catelog
+    value: bundle-test
   workspaces:
   - name: pipelines-data
     persistentVolumeClaim:
