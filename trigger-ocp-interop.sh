@@ -2,8 +2,8 @@ set -x
 set -e
 
 if [ $# != 1 ] ; then
-echo "USAGE: $0 The CRC Version"
-echo " e.g.: ./trigger-ocp-interop.sh 2.40.0"
+echo "USAGE: $1 The OCP Version"
+echo " e.g.: ./trigger-ocp-interop.sh 4.18.0-ec.4"
 exit 1;
 fi
 
