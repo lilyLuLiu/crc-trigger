@@ -7,14 +7,6 @@ spec:
   pipelineRef:
     name: crc-qe-latest
   params:
-  - name: host-config-secret
-    value: host-mac-2-brno
-  - name: builder-config-secret
-    value: host-mac-1-brno
-  # - name: tray-downloadable_baseurl
-  #   value: https://github.com/crc-org/tray-electron/releases/download/1.2.9
-  # - name: crc-scm-pr
-    # value: '3886'
   - name: bundle-name
     value: crc_vfkit_<VERSION>_amd64.crcbundle
   - name: bundle-shasumfile
@@ -30,13 +22,37 @@ spec:
   - name: test-catelog
     value: ocp-interop-test
   workspaces:
-  - name: pipelines-data
-    persistentVolumeClaim:
-      claimName: pipelines-data
-  - name: reportportal-credentials
-    secret:
-      secretName: reportportal-crc
-  - name: ocp-pullsecret
-    secret:
-      secretName: crc-crc-qe
+    - name: storage 
+      volumeClaimTemplate:
+        metadata:
+          annotations:
+            trident.netapp.io/reclaimPolicy: Delete 
+            volume.beta.kubernetes.io/storage-provisioner: netapp.io/trident
+          labels:
+            paas.redhat.com/appcode: OLQE-001 
+        spec:
+          accessModes:
+            - ReadWriteOnce 
+          storageClassName: netapp-nfs
+          resources:
+            requests:
+              storage: 100Mi
+    - name: builder-host-info
+      secret:
+        secretName: host-mac-1-brno
+    - name: aws-credentials
+      secret:
+        secretName: aws-crcqe-bot
+    - name: s3-credentials
+      secret:
+        secretName: s3-aws-crcqe-asia
+    - name: tester-host-info
+      secret:
+        secretName: host-mac-2-brno
+    - name: ocp-pullsecret
+      secret:
+        secretName: crc-crc-qe
+    - name: reportportal-credentials
+      secret:
+        secretName: reportportal-crc
   timeout: "5h"
