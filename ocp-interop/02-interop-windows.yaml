@@ -10,7 +10,7 @@ spec:
   - name: bundle-name
     value: crc_hyperv_<VERSION>_amd64.crcbundle
   - name: bundle-shasumfile
-    value: bundles.x86_64.sha256
+    value: bundles.sha256
   - name: bundle-base-url
     value: "https://crcqe-asia.s3.ap-south-1.amazonaws.com/nightly/ocp/<VERSION>"
   - name: s3-path
@@ -23,20 +23,8 @@ spec:
     value: ocp-interop-test
   workspaces:
     - name: storage 
-      volumeClaimTemplate:
-        metadata:
-          annotations:
-            trident.netapp.io/reclaimPolicy: Delete 
-            volume.beta.kubernetes.io/storage-provisioner: netapp.io/trident
-          labels:
-            paas.redhat.com/appcode: OLQE-001 
-        spec:
-          accessModes:
-            - ReadWriteOnce 
-          storageClassName: netapp-nfs
-          resources:
-            requests:
-              storage: 100Mi
+      persistentVolumeClaim:
+        claimName: pipelines-data
     - name: builder-host-info
       secret:
         secretName: host-windows-1-blr
