@@ -19,7 +19,7 @@ spec:
     value: "~@minimal && ~@story_microshift"
   - name: integration-tag
     value: "! microshift-preset"
-  - name: test-catelog
+  - name: test-catalog
     value: ocp-interop-test
   workspaces:
     - name: storage 

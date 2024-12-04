@@ -19,7 +19,7 @@ spec:
     value: "~@minimal && ~@story_microshift"
   - name: integration-tag
     value: "! microshift-preset"
-  - name: test-catelog
+  - name: test-catalog
     value: ocp-interop-test
   workspaces:
     - name: storage 
@@ -35,7 +35,7 @@ spec:
       secret:
         secretName: s3-aws-crcqe-asia
     - name: tester-host-info
-      secret:
+      secret: 
         secretName: host-windows-1-brno
     - name: ocp-pullsecret
       secret:
