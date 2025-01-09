@@ -12,13 +12,17 @@ if [ -d "tmp" ];then
 fi
 cp -r bundle-test tmp
 
+today=`date +"%Y%m%d"`
+
 # modify pipeline run file
-sed -i'' -e "s#<B_VERSION>#$1#g" tmp/ocp/rhel1-x86.yaml
-sed -i'' -e "s#<B_VERSION>#$1#g" tmp/ocp/mac2-amd64.yaml
-sed -i'' -e "s#<B_VERSION>#$1#g" tmp/ocp/mac4-arm64.yaml
-sed -i'' -e "s#<B_VERSION>#$1#g" tmp/ocp/windows-x86.yaml
+sed -i'' -e "s#<B_VERSION>#$1#g"  tmp/ocp/rhel1-x86.yaml
+sed -i'' -e "s#<B_VERSION>#$1#g"  tmp/ocp/rhel-arm64.yaml
+sed -i'' -e "s#<B_VERSION>#$1#g"  tmp/ocp/mac2-amd64.yaml
+sed -i'' -e "s#<B_VERSION>#$1#g"  tmp/ocp/mac4-arm64.yaml
+sed -i'' -e "s#<B_VERSION>#$1#g"  tmp/ocp/windows-x86.yaml
 
 sed -i'' -e "s#<BUNDLE_VERSION>#$1#g" tmp/microshift/rhel.yaml
+sed -i'' -e "s#<BUNDLE_VERSION>#$1#g" tmp/microshift/rhel-arm64.yaml
 sed -i'' -e "s#<BUNDLE_VERSION>#$1#g" tmp/microshift/mac-x86.yaml
 sed -i'' -e "s#<BUNDLE_VERSION>#$1#g" tmp/microshift/mac-arm64.yaml
 sed -i'' -e "s#<BUNDLE_VERSION>#$1#g" tmp/microshift/windows.yaml

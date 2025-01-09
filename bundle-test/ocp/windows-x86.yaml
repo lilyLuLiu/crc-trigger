@@ -6,30 +6,40 @@ spec:
   pipelineRef:
     name: crc-qe-latest
   params:
-  - name: host-config-secret
-    value: "host-windows-1-brno"
-  - name: builder-config-secret
-    value: "host-windows-1-blr"
-  - name: bundle-version
-    value: "<B_VERSION>"
-  - name: bundle-url
+  - name: bundle-name
+    value: "crc_hyperv_<B_VERSION>_amd64.crcbundle"
+  - name: bundle-base-url
     value: "http://cdk-builds.usersys.redhat.com/builds/crc/bundles/openshift/<B_VERSION>"
+  - name: bundle-shasumfile
+    value: sha256sum.txt
   - name: e2e-tag
     value: "~@minimal && ~@story_microshift && ~@release"
   - name: integration-tag
     value: "! microshift-preset"
-  - name: s3-folder-path
-    value: nightly/ocp/<B_VERSION>
-  - name: test-catelog
+  - name: s3-path
+    value: nightly/crc/<B_VERSION>/windows-x86
+  - name: test-catalog
     value: bundle-test
   workspaces:
-  - name: pipelines-data
-    persistentVolumeClaim:
-      claimName: pipelines-data
-  - name: ocp-pullsecret
-    secret:
-      secretName: crc-crc-qe
-  - name: reportportal-credentials
-    secret:
-      secretName: reportportal-crc
+    - name: storage 
+      persistentVolumeClaim:
+        claimName: pipelines-data
+    - name: builder-host-info
+      secret:
+        secretName: host-windows-1-blr
+    - name: aws-credentials
+      secret:
+        secretName: aws-crcqe-bot
+    - name: s3-credentials
+      secret:
+        secretName: s3-aws-crcqe-asia
+    - name: tester-host-info
+      secret:
+        secretName: host-windows-1-brno
+    - name: ocp-pullsecret
+      secret:
+        secretName: crc-crc-qe
+    - name: reportportal-credentials
+      secret:
+        secretName: reportportal-crc
   timeout: "5h"
