@@ -10,7 +10,7 @@ spec:
     # - name: crc-scm-pr
     #   value: '4437'
     - name: bundle-base-url
-      value: https://cdk-builds.usersys.redhat.com/builds/crc/bundles/openshift/<B_VERSION>-arm64/
+      value: https://crcqe-asia.s3.ap-south-1.amazonaws.com/bundles/openshift/<B_VERSION>-arm64
     - name: bundle-name
       value: crc_libvirt_<B_VERSION>_arm64.crcbundle
     - name: bundle-shasumfile
