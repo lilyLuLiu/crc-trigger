@@ -8,7 +8,7 @@ spec:
     name: crc-qe-latest-arm64
   params:
     - name: bundle-base-url
-      value: https://cdk-builds.usersys.redhat.com/builds/crc/bundles/microshift/<BUNDLE_VERSION>-arm64
+      value: https://crcqe-asia.s3.ap-south-1.amazonaws.com/bundles/microshift/<BUNDLE_VERSION>-arm64
     - name: bundle-name
       value: crc_microshift_libvirt_<BUNDLE_VERSION>_arm64.crcbundle
     - name: bundle-shasumfile
