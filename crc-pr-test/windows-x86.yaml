@@ -1,0 +1,45 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: crc-pr-<PR>-<B_VERSION>-host-windows-1-brno
+spec:
+  pipelineRef:
+    name: crc-qe-latest
+  params:
+  - name: bundle-name
+    value: "crc_hyperv_<B_VERSION>_amd64.crcbundle"
+  - name: bundle-base-url
+    value: "http://cdk-builds.usersys.redhat.com/builds/crc/bundles/openshift/<B_VERSION>"
+  - name: bundle-shasumfile
+    value: sha256sum.txt
+  - name: e2e-tag
+    value: "~@minimal && ~@story_microshift && ~@release"
+  - name: integration-tag
+    value: "! microshift-preset"
+  - name: s3-path
+    value: nightly/crc/pr-test/<PR>/windows-x86
+  - name: test-catalog
+    value: crc-pr<PR>-test
+  workspaces:
+    - name: storage 
+      persistentVolumeClaim:
+        claimName: pipelines-data
+    - name: builder-host-info
+      secret:
+        secretName: host-windows-1-blr
+    - name: aws-credentials
+      secret:
+        secretName: aws-crcqe-bot
+    - name: s3-credentials
+      secret:
+        secretName: s3-aws-crcqe-asia
+    - name: tester-host-info
+      secret:
+        secretName: host-windows-1-brno
+    - name: ocp-pullsecret
+      secret:
+        secretName: crc-crc-qe
+    - name: reportportal-credentials
+      secret:
+        secretName: reportportal-crc
+  timeout: "5h"
