@@ -12,6 +12,8 @@ spec:
     value: "http://cdk-builds.usersys.redhat.com/builds/crc/bundles/openshift/<B_VERSION>"
   - name: bundle-shasumfile
     value: sha256sum.txt
+  - name: crc-scm-pr
+    value: <PR>
   - name: e2e-tag
     value: "~@minimal && ~@story_microshift && ~@release"
   - name: integration-tag
