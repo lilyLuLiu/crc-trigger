@@ -1,0 +1,42 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: release-<VERSION>-<Platform>-
+spec:
+  pipelineRef:
+    name: crc-qe-virtualized
+  params:
+  <plafrom-parameter> '<platform-version>'
+  - name: internal-base-url
+    value: <crcPath>
+  - name: internal-asset-name
+    value: <crcName>
+  - name: internal-shasum-name
+    value: <Shafile>
+  - name: shasum-file
+    value: <Shafile>
+  - name: s3-folder-path
+    value: 'release/<VERSION>/ocp'
+  - name: test-catelog
+    value: "release-test"
+  - name: run-integration
+    value: "<integration>"
+  - name: run-e2e
+    value: "<e2e>"
+  - name: e2e-tag
+    value: "<e2etag>"
+  workspaces:
+  - name: pipelines-data
+    persistentVolumeClaim:
+      claimName: pipelines-data
+  - name: cloud-credentials
+    secret:
+      secretName: aws-crcqe-bot
+  - name: ocp-pullsecret
+    secret:
+      secretName: crc-crc-qe
+  - name: reportportal-credentials
+    secret:
+      secretName: reportportal-crc
+  timeout: "5h"

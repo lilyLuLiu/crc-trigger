@@ -1,0 +1,37 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: release-<VERSION>-<Platform>-
+  labels:
+    app.kubernetes.io/product: crc
+    app.kubernetes.io/ci: tekton
+    tester: <tester>
+spec:
+  status: "PipelineRunPending"
+  pipelineRef:
+    name: crc-qe-baremetal
+  params:
+  - name: host-config-secret
+    value: <tester>
+  - name: downloadable-url
+    value: <crcPath>
+  - name: shasum-file
+    value: <Shafile>
+  - name: integration-timeout
+    value: '120m'
+  - name: s3-folder-path
+    value: 'release/<VERSION>/ocp'
+  - name: test-catelog
+    value: "release-test"
+  workspaces:
+  - name: pipelines-data
+    persistentVolumeClaim:
+      claimName: pipelines-data
+  - name: ocp-pullsecret
+    secret:
+      secretName: crc-crc-qe
+  - name: reportportal-credentials
+    secret:
+      secretName: reportportal-crc
+  timeout: "5h"

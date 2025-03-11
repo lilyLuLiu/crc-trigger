@@ -1,0 +1,47 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: bundle-creation-<ARCH>-<TITLE>-
+spec:
+  pipelineRef:
+    resolver: git
+    params:
+      - name: url
+        value: https://github.com/crc-org/ci-definitions.git
+      - name: revision
+        value: snc-runner-v1.0.2
+      - name: pathInRepo
+        value: snc-runner/tkn/pipeline.yaml
+  params:
+    - name: arch
+      value: <ARCH>
+    - name: ocp-index-url
+      value: <URL>
+    - name: snc-ref
+      value: release-<SNC-REF>
+    - name: snc-pullrequest
+      value: '<PR>'
+    - name: s3-bundles-path
+      value: 'crc-bundle/<S3-PATH>'
+    # - name: ocp-extended-cert
+    #   value: enabled
+    # - name: debug
+    #   value: 'true'
+  workspaces:
+    - name: storage
+      persistentVolumeClaim:
+        claimName: pipelines-data
+    - name: aws-credentials
+      secret:
+        secretName: aws-crcqe-bot
+    - name: rh-account-secret
+      secret:
+        secretName: credentials-rh-subs-crcqe-prod
+    - name: s3-credentials
+      secret:
+        secretName: s3-aws-crcqe-asia
+    - name: ocp-pullsecret
+      secret:
+        secretName: crc-crc-qe
+  timeout: "8h"
