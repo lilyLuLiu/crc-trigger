@@ -33,13 +33,16 @@ function create_yaml_file(){
     arch="amd64"
     status=$pendingStatus
     builderValue="secret:\n        secretName:"
+    builderLable=""
     if [[ $1 == "windows" ]]; then
         vm="hyperv"
         builder="host-windows-1-blr"
         tester="host-windows-1-brno"
+        builderLable=$builder
     elif [[ $1 == mac* ]]; then
         vm="vfkit"
         builder="host-mac-1-brno"
+        builderLable=$builder
         if [[ $1 == *-arm ]]; then
             arch="arm64"
             tester="host-mac-4-brno"
@@ -50,6 +53,7 @@ function create_yaml_file(){
         vm="libvirt"
         builderValue="emptyDir:"
         builder="{}"
+        builderLable="none"
         tester="host-rhel-1-brno"
     fi
     testerWorkspace="- name: tester-host-info\n      secret:\n        secretName: $tester"
@@ -59,8 +63,8 @@ function create_yaml_file(){
         testerWorkspace='- name: az-credentials\n      secret:\n        secretName: az-crcqe-bot'
         pipeline="-arm64"
         arch="arm64"
-        tester="{}"
-        builder="{}"
+        tester="none"
+        builderLable="none"
         status=""
     else
         pipeline=""
@@ -71,7 +75,7 @@ function create_yaml_file(){
     sed -i'' -e "s#<TESTER>#$testerWorkspace#g"  $file
     sed -i'' -e "s#<tester>#$tester#g"  $file
     sed -i'' -e "s#<BUILDER>#$builderWorkspace#g"  $file    
-    sed -i'' -e "s#<builder>#$builder#g"  $file    
+    sed -i'' -e "s#<builder>#$builderLable#g"  $file    
     sed -i'' -e "s#<preset>#$preset#g"  $file
     sed -i'' -e "s#<pipeline>#$pipeline#g"  $file
     sed -i'' -e "s#<status>#$status#g"  $file

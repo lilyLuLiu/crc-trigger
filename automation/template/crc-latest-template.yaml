@@ -33,6 +33,8 @@ spec:
     value: <PURPOSE>
   - name: debug
     value: "<DEBUG>"
+  - name: crc-version
+    value: next
   workspaces:
     - name: storage 
       persistentVolumeClaim:
