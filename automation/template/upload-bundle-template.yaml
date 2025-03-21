@@ -1,0 +1,34 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  generateName: crc-bundle-<Preset>-upload-
+spec:
+  workspaces:
+    - name: aws-config
+      secret:
+        secretName: credentials-aws-crcqe-bot
+  params:
+    - name: source-url
+      value: <Bundle_url>
+    - name: s3-path
+      value: bundles/<Preset>/<Bundle_version>
+  taskSpec:
+    workspaces:
+      - name: aws-config
+        mountPath: /home/1001/.aws
+    params:
+      - name: source-url
+      - name: s3-bucket
+        default: crcqe-asia
+      - name: s3-path
+        description: Path inside the bucket to upload the assets i.e folder...bundles/4.18.2
+    steps:
+      - name: upload
+        image: quay.io/devtools-qe-incubator/ci-hub-support:v1.0.1
+        workingDir: /home/1001
+        script: |
+          #!/bin/sh
+          mkdir downloads
+          wget --no-check-certificate -r --no-parent -nd -R 'index.html*' $(params.source-url) -P downloads
+          aws s3 cp --recursive downloads/ s3://$(params.s3-bucket)/$(params.s3-path)

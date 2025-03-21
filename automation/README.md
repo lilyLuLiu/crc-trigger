@@ -7,9 +7,11 @@
 **Note**: don't run `mac-arm` and `mac-amd` at the same time
 
 # Bundle release test
-1. openshift bundle test
+1. upload bundle to s3
+> ./upload-bundle-s3.sh 4.17.14
+2. openshift bundle test
 > ./crc-latest-test.sh -p bundle-test -b 4.17.14 --preset openshift
-2. microshift bundle test
+3. microshift bundle test
 > ./crc-latest-test.sh -p bundle-test -b 4.17.14 --preset microshift
 
 **Note**: `openshift` and `microshift` should not run at the same time. They all use same baremetal machine
