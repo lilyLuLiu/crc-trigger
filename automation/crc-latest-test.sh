@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#set -x
 function verify_bundle_exist() {
     check_address=$1/$2
     echo "verify existing of $check_address"
@@ -14,72 +14,68 @@ function verify_bundle_exist() {
 function create_yaml_file(){
     echo "creating yaml file for $1"
     file="test/$1.yaml"
-    cp -r template/crc-latest-template.yaml $file
-    sed -i'' -e "s#<Bundle-path>#${bundlePath}#g"  $file
+    if [[ $1 == 'linux-arm' ]]; then
+        cp -r template/crc-latest-test-arm64-template.yaml $file
+        sed -i'' -e "s#<Bundle-path>#${bundlePathArm}#g"  $file
+        bundleName=crc_libvirt_${bundle}_arm64.crcbundle
+        sed -i'' -e "s#<Bundle-name>#${bundleName}#g"  $file
+    else
+        cp -r template/crc-latest-template.yaml $file
+        sed -i'' -e "s#<Bundle-path>#${bundlePath}#g"  $file
+    fi
+    
     sed -i'' -e "s#<B-VERSION>#${bundle}#g"  $file
-    
     sed -i'' -e "s#<DEBUG>#${debug}#g"  $file
-    
     sed -i'' -e "s#<CRC-PR>#'$crcPR'#g"  $file
     sed -i'' -e "s#<RUN-e2e>#${runE2E}#g"  $file
     sed -i'' -e "s#<E2Etag>#${e2eTag}#g"  $file
     sed -i'' -e "s#<RUN-integration>#${runIntegration}#g"  $file
     sed -i'' -e "s#<integration-tag>#${integrationTag}#g"  $file
-
     sed -i'' -e "s#<S3>#${s3path}#g"  $file
     sed -i'' -e "s#<platform>#$1#g"  $file
     sed -i'' -e "s#<PURPOSE>#$purpose1#g"  $file
-
-    arch="amd64"
-    status=$pendingStatus
-    builderValue="secret:\n        secretName:"
-    builderLable=""
-    if [[ $1 == "windows" ]]; then
-        vm="hyperv"
-        builder="host-windows-1-blr"
-        tester="host-windows-1-brno"
-        builderLable=$builder
-    elif [[ $1 == mac* ]]; then
-        vm="vfkit"
-        builder="host-mac-1-brno"
-        builderLable=$builder
-        if [[ $1 == *-arm ]]; then
-            arch="arm64"
-            tester="host-mac-4-brno"
-        else
-            tester="host-mac-2-brno"
-        fi
-    elif [[ $1 == linux-amd ]]; then
-        vm="libvirt"
-        builderValue="emptyDir:"
-        builder="{}"
-        builderLable="none"
-        tester="host-rhel-1-brno"
-    fi
-    testerWorkspace="- name: tester-host-info\n      secret:\n        secretName: $tester"
-    builderWorkspace="- name: builder-host-info\n      $builderValue $builder"
-    if [[ $1 == linux-arm ]]; then
-        builderWorkspace=''
-        testerWorkspace='- name: az-credentials\n      secret:\n        secretName: az-crcqe-bot'
-        pipeline="-arm64"
-        arch="arm64"
-        tester="none"
-        builderLable="none"
-        status=""
-    else
-        pipeline=""
-    fi
-    
-    bundleName=crc_${vm}_${bundle}_${arch}.crcbundle
-
-    sed -i'' -e "s#<TESTER>#$testerWorkspace#g"  $file
-    sed -i'' -e "s#<tester>#$tester#g"  $file
-    sed -i'' -e "s#<BUILDER>#$builderWorkspace#g"  $file    
-    sed -i'' -e "s#<builder>#$builderLable#g"  $file    
     sed -i'' -e "s#<preset>#$preset#g"  $file
-    sed -i'' -e "s#<pipeline>#$pipeline#g"  $file
-    sed -i'' -e "s#<status>#$status#g"  $file
-    sed -i'' -e "s#<Bundle-name>#${bundleName}#g"  $file
+
+
+    if [[ $1 != 'linux-arm' ]]; then
+        arch="amd64"
+        status=$pendingStatus
+        builderValue="secret:\n        secretName:"
+        builderLable=""
+        if [[ $1 == "windows" ]]; then
+            vm="hyperv"
+            builder="host-windows-1-blr"
+            tester="host-windows-1-brno"
+            builderLable=$builder
+        elif [[ $1 == mac* ]]; then
+            vm="vfkit"
+            builder="host-mac-1-brno"
+            builderLable=$builder
+            if [[ $1 == *-arm ]]; then
+                arch="arm64"
+                tester="host-mac-4-brno"
+            else
+                tester="host-mac-2-brno"
+            fi
+        elif [[ $1 == linux-amd ]]; then
+            vm="libvirt"
+            builderValue="emptyDir:"
+            builder="{}"
+            builderLable="none"
+            tester="host-rhel-1-brno"
+        fi
+        testerWorkspace="- name: tester-host-info\n      secret:\n        secretName: $tester"
+        builderWorkspace="- name: builder-host-info\n      $builderValue $builder"
+        
+        bundleName=crc_${vm}_${bundle}_${arch}.crcbundle
+
+        sed -i'' -e "s#<TESTER>#$testerWorkspace#g"  $file
+        sed -i'' -e "s#<tester>#$tester#g"  $file
+        sed -i'' -e "s#<BUILDER>#$builderWorkspace#g"  $file    
+        sed -i'' -e "s#<builder>#$builderLable#g"  $file    
+        sed -i'' -e "s#<status>#$status#g"  $file
+        sed -i'' -e "s#<Bundle-name>#${bundleName}#g"  $file
+    fi
 
 
     if [[ $purpose == 'snc-pr-test' ]] || [[ $purpose == 'interop-test' ]] && [[ $1 == *-arm ]]; then       
@@ -95,10 +91,6 @@ if [[ "$#" -eq 0 ]]; then
   exit 1
 fi
 
-OPTIONS=$(getopt -o p:r:b:d:h --long help,purpose:,pr:,bundle:,preset:,e2e:,e2etag:,integration:,integrationtag:,platform:,debug:,trigger: -- "$@")
-[ $? -ne 0 ] && echo "Error parsing options" && exit 1
-eval set -- "$OPTIONS"
-
 preset="openshift"
 runE2E='true'
 runIntegration='true'
@@ -108,11 +100,11 @@ debug='false'
 trigger='false'
 pendingStatus="PipelineRunPending"
 
-while true; do
+while [[ $# -gt 0 ]]; do
   case "$1" in
     -h|--help)
         echo "Usage: $0"
-        echo "-p|--purpose <purpose>: ['bundle-test','interop-test','nightly-run','crc-pr-test','snc-pr-test']" 
+        echo "-p|--purpose <purpose>: ['bundle-test','interop-test','nightly-run','crc-pr-test','snc-pr-test','other']" 
         echo "--platform , default: windows,mac-amd,mac-arm,linux-amd,linux-arm"
         echo "-b|--bundle <bundle>"
         echo "--preset openshift/microshift; default openshift"
@@ -156,11 +148,6 @@ while true; do
     --trigger)
         trigger=$2;
         shift 2 ;;
-    --) 
-        shift; break ;;
-    *) 
-        echo '-h to check how to use the script'
-        exit 1
   esac
 done
 
@@ -179,34 +166,41 @@ bundleSha="sha256sum.txt"
 crcPR=''
 s3path="nightly/crc/$today"
 bundlePath="https://cdk-builds.usersys.redhat.com/builds/crc/bundles/$preset"
+bundlePathArm="https://crcqe-asia.s3.ap-south-1.amazonaws.com/bundles/$preset"
 bundleShaArm=""
 purpose1=$purpose
 
 if [[ $purpose == 'snc-pr-test' ]]; then
     bundlePath="https://crc-bundle.s3.us-east-1.amazonaws.com/snc-pr/${pr}"
+    bundlePathArm=$bundlePath
     bundleSha="bundles.x86_64.sha256"
     bundleShaArm="bundles.arm64.sha256"
+    verify_bundle_exist $bundlePath/$bundle $bundleSha
+    verify_bundle_exist $bundlePath/$bundle $bundleShaArm
     s3path="nightly/crc/snc-pr/${pr}"
     purpose1=${purpose}-${pr}
 elif [[ $purpose == 'interop-test' ]]; then
     bundlePath="https://crc-bundle.s3.us-east-1.amazonaws.com"
+    bundlePathArm=$bundlePath
     bundleSha="bundles.x86_64.sha256"
     bundleShaArm="bundles.arm64.sha256"
-    s3path="nightly/ocp"
-elif [[ $purpose == 'crc-pr-test' ]]; then 
-    crcPR=$pr
-    s3path="nightly/crc/crc-pr/${pr}"
-    purpose1=${purpose}-${pr}
-elif [[ $purpose == 'bundle-test' ]]; then
-    bundlePath="https://cdk-builds.usersys.redhat.com/builds/crc/bundles/$preset"
-fi
-verify_bundle_exist $bundlePath/$bundle $bundleSha
-if [[ $bundleShaArm != "" ]]; then
+    verify_bundle_exist $bundlePath/$bundle $bundleSha
     verify_bundle_exist $bundlePath/$bundle $bundleShaArm
+    s3path="nightly/ocp"
+else
+    verify_bundle_exist $bundlePath/$bundle $bundleSha
+    verify_bundle_exist $bundlePathArm/$bundle $bundleSha
+
+    if [[ $purpose == 'crc-pr-test' ]]; then 
+        crcPR=$pr
+        s3path="nightly/crc/crc-pr/${pr}"
+        purpose1=${purpose}-${pr}
+    fi
 fi
 
+
 # deal with the default e2e and integration tags
-e2eTagOcp="~@minimal \&\& ~@story_microshift \&\& ~@release"
+e2eTagOcp="~@minimal \&\& ~@story_microshift"
 integrationTagOcp="! microshift-preset"
 e2eTagMicroshift="@story_microshift"
 integrationTagMicroshift="microshift-preset"
@@ -250,9 +244,12 @@ for p in "${allplatform[@]}"; do
   create_yaml_file $p
 done
 
+rm test/*.yaml-e
+
 if [[ $trigger == 'true' ]]; then 
     oc project | grep "devtoolsqe--pipeline"
-    oc create -f test/*.yaml
+    oc create -f test
 else    
     echo "pipeline run yaml files created in folder test"
 fi
+

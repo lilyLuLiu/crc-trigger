@@ -31,7 +31,7 @@ while true; do
     -h|--help)
         echo "Usage: $0"
         echo "-p|--purpose <ocp-interop/snc-pr-test>, default ocp-interop" 
-        echo "-o|--ocp <openshift version>"
+        echo "-v|--ocp <openshift version>"
         echo "--pr <snc pr>"
         echo "-t|--trigger <whether trigger pipeline runs>, default false"
         exit 1 ;;

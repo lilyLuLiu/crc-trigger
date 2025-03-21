@@ -9,7 +9,7 @@ metadata:
 spec:
   status: "<status>"
   pipelineRef:
-    name: crc-qe-latest<pipeline>
+    name: crc-qe-latest
   params:
   - name: bundle-name
     value: <Bundle-name>
