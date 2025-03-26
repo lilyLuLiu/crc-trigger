@@ -61,6 +61,9 @@ for i in ${virtual[@]}; do
     sed -i'' -e "s#<crcPath>#$crcPath#g"  $file
     sed -i'' -e "s#<Shafile>#$shafile#g"  $file
     sed -i'' -e "s#<VERSION>#$crc_version#g"  $file
+    sed -i'' -e "s#<e2e>#true#g"  $file
+    sed -i'' -e "s#<e2etag>#''#g"  $file
+    sed -i'' -e "s#<integration>#true#g"  $file
 
     verify_file_exist $crcPath $crcname    
 done
