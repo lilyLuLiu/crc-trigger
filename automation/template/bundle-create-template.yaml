@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: bundle-creation-<ARCH>-<TITLE>-
+  generateName: bundle-creation-<arch>-<TITLE>-
 spec:
   pipelineRef:
     resolver: git
@@ -21,7 +21,7 @@ spec:
     - name: snc-ref
       value: release-<SNC-REF>
     - name: snc-pullrequest
-      value: '<PR>'
+      value: "<PR>"
     - name: s3-bundles-path
       value: 'crc-bundle/<S3-PATH>'
     # - name: ocp-extended-cert

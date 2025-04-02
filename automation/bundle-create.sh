@@ -4,12 +4,16 @@ function verify_ocp_exist() {
     returnadd=""
 
     ocp_address="https://mirror.openshift.com/pub/openshift-v4/$ocpArch/clients/ocp/$ocpVersion"
+    ocp_preview_address="https://mirror.openshift.com/pub/openshift-v4/$ocpArch/clients/ocp-dev-preview/$ocpVersion"
     validAdd="$ocp_address/release.txt"
+    validAdd_preview="$ocp_preview_address/release.txt"
     validResult=$(curl -s -o /dev/null -w "%{http_code}" $validAdd)
+    validResult_preview=$(curl -s -o /dev/null -w "%{http_code}" $validAdd_preview)
     if [ $validResult == "200" ]; then
         echo $ocp_address
+    elif [[ $validResult_preview == "200" ]]; then
+        echo $ocp_preview_address
     else
-        echo 'ERROR: Cant access the ocp content. Please check the ocp release address and version'
         exit 1
     fi
 }
@@ -24,6 +28,7 @@ OPTIONS=$(getopt -o p:t:v:h --long help,purpose:,pr:,ocp:,trigger: -- "$@")
 eval set -- "$OPTIONS"
 
 purpose="ocp-interop"
+pr=''
 trigger="false"
 
 while true; do
@@ -73,6 +78,7 @@ fi
 
 archs=(arm64 x86_64)
 sncRef=${ocp:0:4}
+
 if [[ $purpose != "ocp-interop" ]]; then 
     s3Path="snc-pr/$pr/$ocp"
     title=$purpose-$pr-$ocp
@@ -91,14 +97,22 @@ for i in ${archs[@]}; do
     cp  template/bundle-create-template.yaml $file
 
     address=$(verify_ocp_exist $ocp $i)
+    if [[ $address == '' ]]; then
+        echo "Error, Cant access the ocp content. Please check the ocp release address and version"
+        exit 1
+    fi
 
+    arch=${i//_/-}
     sed -i'' -e "s#<ARCH>#$i#g"  $file
+    sed -i'' -e "s#<arch>#$arch#g"  $file
     sed -i'' -e "s#<SNC-REF>#$sncRef#g"  $file
-    sed -i'' -e "s#<PR>#$pr#g"  $file
+    sed -i'' -e "s#<PR>#'$pr'#g"  $file
     sed -i'' -e "s#<S3-PATH>#$s3Path#g"  $file
     sed -i'' -e "s#<URL>#$address#g"  $file
     sed -i'' -e "s#<TITLE>#$title#g"  $file
 done
+
+rm test/*.yaml-e
 
 if [[ $trigger == 'true' ]]; then 
     oc project | grep "devtoolsqe--pipeline"
