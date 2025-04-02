@@ -11,6 +11,8 @@ spec:
   pipelineRef:
     name: crc-qe-latest
   params:
+  - name: secret-tester
+    value: <tester>
   - name: bundle-name
     value: <Bundle-name>
   - name: bundle-shasumfile
@@ -51,6 +53,5 @@ spec:
     - name: reportportal-credentials
       secret:
         secretName: reportportal-crc
-    <TESTER>
     <BUILDER>
   timeout: "5h"

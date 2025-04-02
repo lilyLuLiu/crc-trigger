@@ -7,8 +7,8 @@ spec:
   pipelineRef:
     name: crc-qe-latest-arm64
   params:
-     - name: crc-scm-pr
-       value: "<CRC-PR>"
+    - name: crc-scm-pr
+      value: "<CRC-PR>"
     - name: bundle-base-url
       value: "<Bundle-path>/<B-VERSION>"
     - name: bundle-name

@@ -45,7 +45,7 @@ function create_yaml_file(){
         if [[ $1 == "windows" ]]; then
             vm="hyperv"
             builder="host-windows-1-blr"
-            tester="host-windows-1-brno"
+            tester="secret-windows-1-brno"
             builderLable=$builder
         elif [[ $1 == mac* ]]; then
             vm="vfkit"
@@ -53,23 +53,23 @@ function create_yaml_file(){
             builderLable=$builder
             if [[ $1 == *-arm ]]; then
                 arch="arm64"
-                tester="host-mac-4-brno"
+                tester="secret-mac-4-brno"
             else
-                tester="host-mac-2-brno"
+                tester="secret-mac-2-brno"
             fi
         elif [[ $1 == linux-amd ]]; then
             vm="libvirt"
             builderValue="emptyDir:"
             builder="{}"
             builderLable="none"
-            tester="host-rhel-1-brno"
+            tester="secret-rhel-1-brno"
         fi
         testerWorkspace="- name: tester-host-info\n      secret:\n        secretName: $tester"
         builderWorkspace="- name: builder-host-info\n      $builderValue $builder"
         
         bundleName=crc_${vm}_${bundle}_${arch}.crcbundle
 
-        sed -i'' -e "s#<TESTER>#$testerWorkspace#g"  $file
+        #sed -i'' -e "s#<TESTER>#$testerWorkspace#g"  $file
         sed -i'' -e "s#<tester>#$tester#g"  $file
         sed -i'' -e "s#<BUILDER>#$builderWorkspace#g"  $file    
         sed -i'' -e "s#<builder>#$builderLable#g"  $file    
