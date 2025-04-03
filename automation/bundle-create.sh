@@ -80,10 +80,10 @@ archs=(arm64 x86_64)
 sncRef=${ocp:0:4}
 
 if [[ $purpose != "ocp-interop" ]]; then 
-    s3Path="snc-pr/$pr/$ocp"
+    s3Path="/snc-pr/$pr"
     title=$purpose-$pr-$ocp
 else
-    s3Path=$ocp
+    s3Path=''
     title=$purpose-$ocp
 fi
 

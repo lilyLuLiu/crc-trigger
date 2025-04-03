@@ -17,7 +17,7 @@ function verify_file_exist() {
 }
 
 baremental=(mac-1 mac-2 mac-4 rhel-1 windows-1)
-virtual=(fedora-40 fedora-41 rhel-9.4 windows-10)
+virtual=(fedora-42 fedora-41 rhel-9.4 windows-10)
 
 crc_version=$1
 crc_v2=${crc_version:0:4}

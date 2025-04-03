@@ -23,9 +23,9 @@ spec:
     - name: snc-pullrequest
       value: "<PR>"
     - name: s3-bundles-path
-      value: 'crc-bundle/<S3-PATH>'
-    # - name: ocp-extended-cert
-    #   value: enabled
+      value: 'crc-bundle<S3-PATH>'
+    - name: ocp-extended-cert
+      value: enabled
     # - name: debug
     #   value: 'true'
   workspaces:
