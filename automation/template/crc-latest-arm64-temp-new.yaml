@@ -1,0 +1,48 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: crc-<PURPOSE>-<preset>-<B-VERSION>-<platform>-
+spec:
+  pipelineRef:
+    resolver: git
+    params:
+      - name: url
+        value: https://github.com/crc-org/ci-definitions.git
+      - name: revision
+        value: main
+      - name: pathInRepo
+        value: pipelines/crc-qe-latest-arm64.yaml
+  params:
+    - name: crc-scm-pr
+      value: "<CRC-PR>"
+    - name: bundle-base-url
+      value: "<Bundle-path>/<B-VERSION>"
+    - name: bundle-name
+      value: <Bundle-name>
+    - name: bundle-shasumfile
+      value: <SHA-FILE>
+    - name: run-e2e
+      value: "<RUN-e2e>"
+    - name: e2e-tag
+      value: "<E2Etag>"
+    - name: run-integration
+      value: "<RUN-integration>"
+    - name: integration-tag
+      value: "<integration-tag>"
+    - name: s3-path
+      value: <S3>/<B-VERSION>/<platform>
+    - name: test-catalog
+      value: <PURPOSE>
+    - name: debug
+      value: "<DEBUG>"
+    - name: crc-version
+      value: next
+  workspaces:
+    - name: storage 
+      persistentVolumeClaim:
+        claimName: pipelines-data
+    - name: ocp-pullsecret
+      secret:
+        secretName: crc-crc-qe
+  timeout: "5h"
