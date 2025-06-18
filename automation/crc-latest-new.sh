@@ -12,35 +12,27 @@ function verify_bundle_exist() {
 }
 
 function create_yaml_file(){
-    echo "creating yaml file for $1"
-    file="test/$1.yaml"
+    file="test/$1-$2.yaml"
+    echo "creating yaml file for $file"
+
+    B_preset=""
+    if [[ $2 == "microshift" ]]; then
+        B_preset="_microshift"
+    fi
+
     if [[ $1 == 'linux-arm' ]]; then
         cp -r template/crc-latest-arm64-temp-new.yaml $file
         sed -i'' -e "s#<Bundle-path>#${bundlePathArm}#g"  $file
-        bundleName=crc_libvirt_${bundle}_arm64.crcbundle
+
+        bundleName=crc${B_preset}_libvirt_${bundle}_arm64.crcbundle
         sed -i'' -e "s#<Bundle-name>#${bundleName}#g"  $file
+
     else
         cp -r template/crc-latest-template-new.yaml $file
         sed -i'' -e "s#<Bundle-path>#${bundlePath}#g"  $file
-    fi
-    
-    sed -i'' -e "s#<B-VERSION>#${bundle}#g"  $file
-    sed -i'' -e "s#<DEBUG>#${debug}#g"  $file
-    sed -i'' -e "s#<CRC-PR>#'$crcPR'#g"  $file
-    sed -i'' -e "s#<RUN-e2e>#${runE2E}#g"  $file
-    sed -i'' -e "s#<E2Etag>#${e2eTag}#g"  $file
-    sed -i'' -e "s#<RUN-integration>#${runIntegration}#g"  $file
-    sed -i'' -e "s#<integration-tag>#${integrationTag}#g"  $file
-    sed -i'' -e "s#<S3>#${s3path}#g"  $file
-    sed -i'' -e "s#<platform>#$1#g"  $file
-    sed -i'' -e "s#<PURPOSE>#$purpose1#g"  $file
-    sed -i'' -e "s#<preset>#$preset#g"  $file
 
-
-    if [[ $1 != 'linux-arm' ]]; then
         arch="amd64"
         status=$pendingStatus
-        #builderValue="secret:\n        secretName:"
         if [[ $1 == "windows" ]]; then
             vm="hyperv"
             builder="secret-windows-1-blr"
@@ -56,23 +48,29 @@ function create_yaml_file(){
             fi
         elif [[ $1 == linux-amd ]]; then
             vm="libvirt"
-            #builderValue="emptyDir:"
             builder="''"
             tester="secret-rhel-1-brno"
         fi
-        #testerWorkspace="- name: tester-host-info\n      secret:\n        secretName: $tester"
-        #builderWorkspace="- name: builder-host-info\n      $builderValue $builder"
-        
-        bundleName=crc_${vm}_${bundle}_${arch}.crcbundle
 
-        #sed -i'' -e "s#<TESTER>#$testerWorkspace#g"  $file
-        sed -i'' -e "s#<tester>#$tester#g"  $file
-        #sed -i'' -e "s#<BUILDER>#$builderWorkspace#g"  $file    
+        bundleName=crc${B_preset}_${vm}_${bundle}_${arch}.crcbundle
+
+        sed -i'' -e "s#<tester>#$tester#g"  $file   
         sed -i'' -e "s#<builder>#$builder#g"  $file    
         sed -i'' -e "s#<status>#$status#g"  $file
         sed -i'' -e "s#<Bundle-name>#${bundleName}#g"  $file
     fi
 
+    sed -i'' -e "s#<B-VERSION>#${bundle}#g"  $file
+    sed -i'' -e "s#<DEBUG>#${debug}#g"  $file
+    sed -i'' -e "s#<CRC-PR>#'$crcPR'#g"  $file
+    sed -i'' -e "s#<RUN-e2e>#${runE2E}#g"  $file
+    sed -i'' -e "s#<E2Etag>#${e2eTag}#g"  $file
+    sed -i'' -e "s#<RUN-integration>#${runIntegration}#g"  $file
+    sed -i'' -e "s#<integration-tag>#${integrationTag}#g"  $file
+    sed -i'' -e "s#<S3>#${s3path}#g"  $file
+    sed -i'' -e "s#<platform>#$1#g"  $file
+    sed -i'' -e "s#<PURPOSE>#$purpose1#g"  $file
+    sed -i'' -e "s#<preset>#$preset#g"  $file
 
     if [[ $purpose == 'snc-pr-test' ]] || [[ $purpose == 'interop-test' ]] && [[ $1 == *-arm ]]; then       
         sed -i'' -e "s#<SHA-FILE>#${bundleShaArm}#g"  $file
@@ -237,7 +235,7 @@ mkdir test
 # Create pipeline run yaml file
 IFS=',' read -ra allplatform <<< "$platforms"
 for p in "${allplatform[@]}"; do
-  create_yaml_file $p
+  create_yaml_file $p $preset
 done
 
 rm test/*.yaml-e
