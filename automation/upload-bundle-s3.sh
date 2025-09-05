@@ -6,7 +6,7 @@ exit 1;
 fi
 
 function verify_bundle_exist() {
-    check_address=${1}sha256sum.txt
+    check_address=${1}/sha256sum.txt
     echo "verify existing of $check_address"
     valid_code=$(curl -s -o /dev/null -w "%{http_code}" $check_address)
     echo $valid_code
@@ -30,12 +30,18 @@ for i in ${presets[@]}; do
     file="test/upload-bundle-$i.yaml" 
     cp -r template/upload-bundle-template.yaml $file
 
-    bundleUrl="https://cdk-builds.usersys.redhat.com/builds/crc/bundles/$i/${bundle_version}/"
-    echo $bundleUrl
-    verify_bundle_exist $bundleUrl
+    bundleUrl="https://cdk-builds.usersys.redhat.com/builds/crc/bundles/$i/${bundle_version}"
+    if [ $i == "openshift" ]; then
+        bundlename="crc_libvirt_${bundle_version}_arm64.crcbundle"
+    else
+        bundlename="crc_microshift_libvirt_${bundle_version}_arm64.crcbundle"
+    fi
+    echo "$bundleUrl/$bundlename"
+    verify_bundle_exist "$bundleUrl"
     sed -i'' -e "s#<Bundle_url>#$bundleUrl#g"  $file
     sed -i'' -e "s#<Preset>#$i#g"  $file
     sed -i'' -e "s#<Bundle_version>#${bundle_version}#g"  $file
+    sed -i'' -e "s#<Bundle_name>#${bundlename}#g"  $file
 done
 
 rm test/*.yaml-e

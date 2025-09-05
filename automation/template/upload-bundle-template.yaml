@@ -11,6 +11,8 @@ spec:
   params:
     - name: source-url
       value: <Bundle_url>
+    - name: bundle-name
+      value: <Bundle_name>
     - name: s3-path
       value: bundles/<Preset>/<Bundle_version>
   taskSpec:
@@ -19,6 +21,7 @@ spec:
         mountPath: /home/1001/.aws
     params:
       - name: source-url
+      - name: bundle-name
       - name: s3-bucket
         default: crcqe-asia
       - name: s3-path
@@ -30,5 +33,8 @@ spec:
         script: |
           #!/bin/sh
           mkdir downloads
-          wget --no-check-certificate -r --no-parent -nd -R 'index.html*' $(params.source-url) -P downloads
+          bundle=$(params.source-url)/$(params.bundle-name)
+          wget --no-check-certificate -r --no-parent -nd -R 'index.html*' $bundle -P downloads
+          checkfile=$(params.source-url)/sha256sum.txt
+          wget --no-check-certificate -r --no-parent -nd -R 'index.html*' $checkfile -P downloads
           aws s3 cp --recursive downloads/ s3://$(params.s3-bucket)/$(params.s3-path)
