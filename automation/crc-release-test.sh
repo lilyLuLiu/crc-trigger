@@ -73,7 +73,7 @@ for i in ${baremental[@]}; do
     file="test/bare-$i.yaml"
     cp -r template/baremetal-tempalte.yaml $file
 
-    tester="host-$i-brno"
+    tester="secret-$i-brno"
 
     sed -i'' -e "s#<Platform>#$i#g"  $file
     sed -i'' -e "s#<Shafile>#$shafile#g"  $file

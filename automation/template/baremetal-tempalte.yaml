@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/ci: tekton
     tester: <tester>
 spec:
-  status: "PipelineRunPending"
+  #status: "PipelineRunPending"
   pipelineRef:
     name: crc-qe-baremetal
   params:
