@@ -8,7 +8,7 @@ fi
 function verify_bundle_exist() {
     check_address=${1}/sha256sum.txt
     echo "verify existing of $check_address"
-    valid_code=$(curl -s -o /dev/null -w "%{http_code}" $check_address)
+    valid_code=$(curl -s -fI -o /dev/null -w "%{http_code}" $check_address)
     echo $valid_code
     if [ $valid_code != 200 ]; then
         echo "The url of $check_address not accessible, please check again"

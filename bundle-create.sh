@@ -7,7 +7,7 @@ function verify_ocp_exist() {
     ocp_preview_address="https://mirror.openshift.com/pub/openshift-v4/$ocpArch/clients/ocp-dev-preview/$ocpVersion"
     validAdd="$ocp_address/release.txt"
     validAdd_preview="$ocp_preview_address/release.txt"
-    validResult=$(curl -s -o /dev/null -w "%{http_code}" $validAdd)
+    validResult=$(curl -s -fI -o /dev/null -w "%{http_code}" $validAdd)
     validResult_preview=$(curl -s -o /dev/null -w "%{http_code}" $validAdd_preview)
     if [ $validResult == "200" ]; then
         echo $ocp_address
