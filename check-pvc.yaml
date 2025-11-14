@@ -1,0 +1,15 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  generateName: lul-tests1
+spec:
+  taskRef: 
+    name: lul-test
+  params:
+    - name: ocp-version
+      value: "123test"
+  workspaces:
+    - name: storage 
+      persistentVolumeClaim:
+        claimName: pipelines-data
