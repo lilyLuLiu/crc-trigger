@@ -77,6 +77,10 @@ function create_yaml_file(){
     else
         sed -i'' -e "s#<SHA-FILE>#${bundleSha}#g"  $file
     fi
+
+    if [[ $1 == linux-amd ]]; then
+        sed -i'' -e '7d' $file
+    fi 
 }
 
 

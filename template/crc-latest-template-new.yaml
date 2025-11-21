@@ -7,7 +7,7 @@ metadata:
     builder: <builder>
     tester: <tester>
 spec:
-  #status: "<status>"
+  status: "<status>"
   pipelineRef:
     resolver: git
     params:
