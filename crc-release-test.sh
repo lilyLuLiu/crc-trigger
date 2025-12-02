@@ -84,4 +84,5 @@ done
 
 rm test/*.yaml-e
 oc project | grep "devtoolsqe--pipeline"
+oc set data configmap config-crc-release crc-version=$crc_version
 #oc create -f test
