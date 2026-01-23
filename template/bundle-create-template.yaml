@@ -10,7 +10,7 @@ spec:
       - name: url
         value: https://github.com/crc-org/ci-definitions.git
       - name: revision
-        value: snc-runner-v1.0.2
+        value: main
       - name: pathInRepo
         value: snc-runner/tkn/pipeline.yaml
   params:
@@ -25,19 +25,13 @@ spec:
     - name: s3-bundles-path
       value: 'crc-bundle<S3-PATH>'
     - name: ocp-extended-cert
-      value: enabled
+      value: disabled
     # - name: debug
     #   value: 'true'
   workspaces:
     - name: storage
       persistentVolumeClaim:
         claimName: pipelines-data
-    - name: aws-credentials
-      secret:
-        secretName: aws-crcqe-bot
-    - name: rh-account-secret
-      secret:
-        secretName: credentials-rh-subs-crcqe-prod
     - name: s3-credentials
       secret:
         secretName: s3-aws-crcqe-asia
