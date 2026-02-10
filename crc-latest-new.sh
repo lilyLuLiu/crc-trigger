@@ -42,7 +42,7 @@ function create_yaml_file(){
             builder="secret-mac-1-brno"
             if [[ $1 == *-arm ]]; then
                 arch="arm64"
-                tester="secret-mac-4-brno"
+                tester="secret-mac-7-brno"
             else
                 tester="secret-mac-2-brno"
             fi
