@@ -5,9 +5,18 @@ metadata:
   generateName: release-<VERSION>-<Platform>-
 spec:
   pipelineRef:
-    name: crc-qe-virtualized
+    resolver: git
+    params:
+      - name: url
+        value: https://github.com/crc-org/ci-definitions
+      - name: revision
+        value: main
+      - name: pathInRepo
+        value: pipelines/crc-release-virtual.yaml
   params:
   <plafrom-parameter> '<platform-version>'
+  - name: crc-version
+    value: "<VERSION>"
   - name: internal-base-url
     value: <crcPath>
   - name: internal-asset-name
@@ -26,17 +35,4 @@ spec:
     value: "<e2e>"
   - name: e2e-tag
     value: "<e2etag>"
-  workspaces:
-  - name: pipelines-data
-    persistentVolumeClaim:
-      claimName: pipelines-data
-  - name: cloud-credentials
-    secret:
-      secretName: aws-crcqe-bot
-  - name: ocp-pullsecret
-    secret:
-      secretName: crc-crc-qe
-  - name: reportportal-credentials
-    secret:
-      secretName: reportportal-crc
   timeout: "5h"

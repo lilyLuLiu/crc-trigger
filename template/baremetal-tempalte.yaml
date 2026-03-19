@@ -10,8 +10,17 @@ metadata:
 spec:
   status: "PipelineRunPending"
   pipelineRef:
-    name: crc-qe-baremetal
+    resolver: git
+    params:
+      - name: url
+        value: https://github.com/crc-org/ci-definitions
+      - name: revision
+        value: main
+      - name: pathInRepo
+        value: pipelines/crc-release-baremetal.yaml
   params:
+  - name: crc-version
+    value: '<VERSION>'
   - name: host-config-secret
     value: <tester>
   - name: downloadable-url
@@ -24,14 +33,4 @@ spec:
     value: 'release/<VERSION>/ocp'
   - name: test-catelog
     value: "release-test"
-  workspaces:
-  - name: pipelines-data
-    persistentVolumeClaim:
-      claimName: pipelines-data
-  - name: ocp-pullsecret
-    secret:
-      secretName: crc-crc-qe
-  - name: reportportal-credentials
-    secret:
-      secretName: reportportal-crc
   timeout: "5h"
