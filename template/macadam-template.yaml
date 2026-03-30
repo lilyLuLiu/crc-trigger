@@ -1,0 +1,36 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: macadam-e2e-<OS>-<ARCH>-<purpose>-test-
+  labels:
+    app.kubernetes.io/product: crc
+    app.kubernetes.io/ci: tekton
+    tester: <tester>
+spec:
+  status: "PipelineRunPending"
+  pipelineRef:
+    resolver: git
+    params:
+      - name: url
+        value: https://github.com/crc-org/ci-definitions
+      - name: revision
+        value: main
+      - name: pathInRepo
+        value: macadam-test/macadam-test-on-baremetal.yaml
+  params:
+  - name: revision
+    value: "<revision>"
+  - name: OS
+    value: <OS>
+  - name: ARCH
+    value: <ARCH>
+  - name: test-machine
+    value: <tester>
+  - name: e2e-tag
+    value: "<e2e-tag>"
+  - name: s3-path
+    value: "nightly/macadam/<DATE>/<OS>-<ARCH>"
+  - name: image-url
+    value: "<image-url>"
+  timeout: "5h"
