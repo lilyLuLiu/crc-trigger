@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: macadam-e2e-<OS>-<ARCH>-<purpose>-test-
+  generateName: macadam-e2e-<OS>-<ARCH>-<purpose>-test-<IMAGE>-
   labels:
     app.kubernetes.io/product: crc
     app.kubernetes.io/ci: tekton
@@ -30,7 +30,7 @@ spec:
   - name: e2e-tag
     value: "<e2e-tag>"
   - name: s3-path
-    value: "nightly/macadam/<DATE>/<OS>-<ARCH>"
+    value: "nightly/macadam/<DATE>/<OS>-<ARCH>/<IMAGE>"
   - name: image-url
     value: "<image-url>"
   timeout: "5h"

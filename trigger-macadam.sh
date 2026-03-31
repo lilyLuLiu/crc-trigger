@@ -5,8 +5,12 @@ if [[ "$#" -eq 0 ]]; then
 fi
 
 
-baremental=(mac-2 mac-7-arm rhel-1 windows-1)
+baremental=(mac-2 mac7-fedora-arm mac7-rhel-arm rhel-1 windows-fedora windows-rhel)
+windows_fedora_vhd="https://crcqe-asia.s3.ap-south-1.amazonaws.com/macadam-image/Fedora-Cloud-Base-Azure-43-1.6.x86_64.vhd"
 
+windows_rhel_wsl="https://download.eng.pek2.redhat.com/rhel-10/nightly/RHEL-10/latest-RHEL-10.1/compose/BaseOS/x86_64/images/rhel-wsl2-10.1-20251021.0.x86_64.wsl"
+
+rhel_qcow2="https://download.eng.pek2.redhat.com/rhel-10/nightly/RHEL-10/latest-RHEL-10.1/compose/BaseOS/x86_64/images/rhel-guest-image-10.1-20251021.0.x86_64.qcow2"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -50,6 +54,7 @@ for i in ${baremental[@]}; do
     arch="amd64"
     imageUrl="''"
     e2eTag="''"
+    image="qcow2-centos"
 
     echo "creating yaml file for $i"
     file="test/bare-$i.yaml"
@@ -57,7 +62,13 @@ for i in ${baremental[@]}; do
     if [[ $i == windows* ]]; then
         tester="secret-windows-1-brno"
         os="windows"
-        imageUrl="https://crcqe-asia.s3.ap-south-1.amazonaws.com/macadam-image/Fedora-Cloud-Base-Azure-43-1.6.x86_64.vhd"
+        if [[ $i == *-fedora ]]; then
+            imageUrl=$windows_fedora_vhd
+            image="vhd-fedora"
+        else
+            imageUrl=$windows_rhel_wsl
+            image="wsl-rhel"
+        fi
     elif [[ $i == mac* ]]; then
         os="darwin"
         if [[ $i == *-arm ]]; then
@@ -65,6 +76,10 @@ for i in ${baremental[@]}; do
             arch="arm64"
         else
             tester="secret-mac-2-brno"
+        fi
+        if [[ "$i" == *rhel* ]]; then
+            imageUrl=$rhel_qcow2
+            image="qcow2-rhel"
         fi
     elif [[ $i == rhel* ]]; then
         tester="secret-rhel-1-brno"
@@ -82,6 +97,7 @@ for i in ${baremental[@]}; do
     sed -i'' -e "s#<purpose>#${purpose}#g"  $file   
     sed -i'' -e "s#<revision>#${revision}#g"  $file
     sed -i'' -e  "s#<DATE>#$(date +%Y-%m-%d)#g"  $file
+    sed -i'' -e "s#<IMAGE>#${image}#g"  $file
 done
 
 rm test/*.yaml-e
