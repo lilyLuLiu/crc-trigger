@@ -7,13 +7,14 @@ fi
 
 function verify_bundle_exist() {
     check_address=${1}/sha256sum.txt
-    echo "verify existing of $check_address"
+    #echo "verify existing of $check_address"
     valid_code=$(curl -s -fI -o /dev/null -w "%{http_code}" $check_address)
     echo $valid_code
     if [ $valid_code != 200 ]; then
         echo "The url of $check_address not accessible, please check again"
-        exit 1
+        return 1
     fi
+    return 0
 }
 
 
@@ -23,6 +24,7 @@ fi
 mkdir test
 
 bundle_version=$1
+
 presets=(openshift microshift)
 
 for i in ${presets[@]}; do
@@ -36,8 +38,12 @@ for i in ${presets[@]}; do
     else
         bundlename="crc_microshift_libvirt_${bundle_version}_arm64.crcbundle"
     fi
-    echo "$bundleUrl/$bundlename"
-    verify_bundle_exist "$bundleUrl"
+    #echo "$bundleUrl/$bundlename"
+    if ! verify_bundle_exist "$bundleUrl"; then
+        echo "The bundle $bundleUrl/$bundlename not exist, please check again"
+        rm $file
+        continue
+    fi
     sed -i'' -e "s#<Bundle_url>#$bundleUrl#g"  $file
     sed -i'' -e "s#<Preset>#$i#g"  $file
     sed -i'' -e "s#<Bundle_version>#${bundle_version}#g"  $file
